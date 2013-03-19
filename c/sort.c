@@ -9,6 +9,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define MAX_LEN 100
+
 inline void swap(void* a, void* b, size_t size){
 
     void* tmp = malloc(size);
@@ -76,11 +78,27 @@ int cmpint (const void * a, const void * b){
     return (*vala - *valb);
 }
 
-int main(){
+int main(int argv, char* argc[]){
 
-    int values[] = { 40, 10, 100, 90, 20, 25, 100, 33, 0, -3, 20};
-    size_t len = sizeof(values) / sizeof(*values);
+    int values[MAX_LEN];
+    size_t len = 0;
     size_t i;
+
+    FILE* infile = NULL;
+    if(argv > 1){
+	infile = fopen(argc[1], "r");
+	if(!infile){
+	    perror("Failed to open input file:");
+	    exit(EXIT_FAILURE);
+	}
+	while((len < MAX_LEN) && (fscanf(infile, "%d", &values[len]) > 0)){
+	    len++;
+	}
+    }
+    else{
+	fprintf(stderr, "Must specify input file path\n");
+	exit(EXIT_FAILURE);
+    }
 
     fprintf(stdout, "Unsorted:\n");
     for(i = 0; i < len; i++){
@@ -96,6 +114,6 @@ int main(){
     }
     fprintf(stdout, "\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 
 }
