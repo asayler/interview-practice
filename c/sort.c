@@ -1,3 +1,8 @@
+/* A quicksort implementation in c
+ * Spring 2013
+ * By Andy Sayler
+ * http://www.andysayler.com
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -82,7 +87,7 @@ int main(){
 	fprintf(stdout, "%d ", values[i]);
     }
     fprintf(stdout, "\n");
- 
+
     sort(values, len, sizeof(*values), cmpint);
 
     fprintf(stdout, "Sorted:\n");
@@ -90,9 +95,7 @@ int main(){
 	fprintf(stdout, "%d ", values[i]);
     }
     fprintf(stdout, "\n");
-	
 
     return 0;
 
 }
-
