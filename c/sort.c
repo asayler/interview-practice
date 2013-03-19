@@ -4,94 +4,78 @@
 #include <string.h>
 #include <unistd.h>
 
-void sort(void* array, size_t len, size_t size, int (*compare)(const void*, const void*)){
+inline void swap(void* a, void* b, size_t size){
 
-    size_t i;
-    size_t pivot;
-    void* pivotp = NULL;
+    void* tmp = malloc(size);
+    if(tmp == NULL){
+	perror("swap: malloc of 'tmp' failed");
+	return;
+    }
+
+    memcpy(tmp, a, size);
+    memcpy(a, b, size);
+    memcpy(b, tmp, size);
+
+    return;
+}
+
+inline int partition(void* array, int left, int right, int pivot, size_t size, int (*compare)(const void*, const void*)){
+
+    int i;
     void* ip = NULL;
-
-    /* ToDo: Make in-place */
-    size_t lowl = 0;
-    void* low = malloc(len * size);
-    if(low == NULL){
-	perror("sort: malloc of 'low' failed");
-	return;
-    }
-    size_t highl = 0;
-    void* high = malloc(len * size);
-    if(high == NULL){
-	perror("sort: malloc of 'high' failed");
-	free(low);
-	return;
-    }
-
-    //sleep(1);
-    //fprintf(stderr, "len = %zd\n", len);
-
-    if(len > 1){
-	//fprintf(stderr, "Recurse\n");
-
-	/* ToDo: Choose f,m,l median pivot */
-	pivot = len/2;
-	pivotp = array + (pivot * size);
-
-	/* Split Array */
-	for(i = 0; i < len; i++){
-	    if(i != pivot){
-		ip = array + (i * size);
-		if(compare(ip, pivotp) < 0){
-		    memcpy((low + (lowl * size)), ip, size);
-		    lowl++;
-		}
-		else{
-		    memcpy((high + (highl * size)), ip, size);
-		    highl++;
-		}
-	    }
+    int store = left;
+    void* storep = array + (store * size);
+    void* rightp = array + (right * size);
+ 
+    swap(rightp, (array + (pivot * size)), size);
+    
+    for(i = left; i < right; i++){
+	ip = array + (i * size);
+	if(compare(ip, rightp) < 0){
+	    swap(ip, storep, size);
+	    store++;
+	    storep = array + (store * size);
 	}
-	
-	/* Reconstitute Array */
-	//fprintf(stderr, "lowl = %zd\n", lowl);
-	sort(low, lowl, size, compare);
-	memcpy(array, low, (lowl * size));
-	memcpy((array + (lowl * size)), pivotp, size);
-	//fprintf(stderr, "highl = %zd\n", highl);
-	sort(high, highl, size, compare);
-	memcpy(array + ((lowl + 1) * size), high, (highl * size));
-
-	free(low);
-	free(high);
-
-	return;
     }
-    else{
+    swap(rightp, storep, size);
 
-	//fprintf(stderr, "End\n");
+    return store;
+}
 
-	free(low);
-	free(high);	
+void quicksort(void* array, int left, int right, size_t size, int (*compare)(const void*, const void*)){
 
-	return;
+    int pivot;
+
+    if(left < right){
+	pivot = ((right - left) / 2) + left;
+	pivot = partition(array, left, right, pivot, size, compare);
+	quicksort(array, left, (pivot - 1), size, compare);
+	quicksort(array, (pivot + 1), right, size, compare);
     }
 
+    return;
+}
+
+void sort(void* array, size_t len, size_t size, int (*compare)(const void*, const void*)){
+    
+    quicksort(array, 0, len-1, size, compare);
+    
+    return;
 }
 
 int cmpint (const void * a, const void * b){
+
     const int* vala = a;
     const int* valb = b;
-    //fprintf(stderr, "vala = %d\n", *vala);
-    //fprintf(stderr, "valb = %d\n", *valb);
-    return ( *vala - *valb );
+
+    return (*vala - *valb);
 }
 
 int main(){
 
-    int values[] = { 40, 10, 100, 90, 20, 25 };
-    size_t len = 6;
+    int values[] = { 40, 10, 100, 90, 20, 25, 100, 33, 0, -3, 20};
+    size_t len = sizeof(values) / sizeof(*values);
     size_t i;
-
-    fprintf(stdout, "sizeof(*values) = %zd\n", sizeof(*values));
 
     fprintf(stdout, "Unsorted:\n");
     for(i = 0; i < len; i++){
