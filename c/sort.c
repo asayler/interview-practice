@@ -26,11 +26,11 @@ void sort(void* array, size_t len, size_t size, int (*compare)(const void*, cons
 	return;
     }
 
-    sleep(1);
-    fprintf(stderr, "len = %zd\n", len);
+    //sleep(1);
+    //fprintf(stderr, "len = %zd\n", len);
 
     if(len > 1){
-	fprintf(stderr, "Recurse\n");
+	//fprintf(stderr, "Recurse\n");
 
 	/* ToDo: Choose f,m,l median pivot */
 	pivot = len/2;
@@ -52,11 +52,11 @@ void sort(void* array, size_t len, size_t size, int (*compare)(const void*, cons
 	}
 	
 	/* Reconstitute Array */
-	fprintf(stderr, "lowl = %zd\n", lowl);
+	//fprintf(stderr, "lowl = %zd\n", lowl);
 	sort(low, lowl, size, compare);
 	memcpy(array, low, (lowl * size));
 	memcpy((array + (lowl * size)), pivotp, size);
-	fprintf(stderr, "highl = %zd\n", highl);
+	//fprintf(stderr, "highl = %zd\n", highl);
 	sort(high, highl, size, compare);
 	memcpy(array + ((lowl + 1) * size), high, (highl * size));
 
@@ -67,7 +67,7 @@ void sort(void* array, size_t len, size_t size, int (*compare)(const void*, cons
     }
     else{
 
-	fprintf(stderr, "End\n");
+	//fprintf(stderr, "End\n");
 
 	free(low);
 	free(high);	
@@ -80,8 +80,8 @@ void sort(void* array, size_t len, size_t size, int (*compare)(const void*, cons
 int cmpint (const void * a, const void * b){
     const int* vala = a;
     const int* valb = b;
-    fprintf(stderr, "vala = %d\n", *vala);
-    fprintf(stderr, "valb = %d\n", *valb);
+    //fprintf(stderr, "vala = %d\n", *vala);
+    //fprintf(stderr, "valb = %d\n", *valb);
     return ( *vala - *valb );
 }
 
